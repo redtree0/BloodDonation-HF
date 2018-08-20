@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hyperledger Fabric Crago Contract Application</title>
+    <link rel="icon" href="images/favicon.png" type="image/gif">
+
+    <!-- require jquery and bootstrap scripts -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  
+
+    <!-- adding style here -->
+    <style type="text/css">
+      header{
+        background-color: lightgray;
+        font-size:20px;
+        padding:15px;
+      }
+      header, .form-group{
+        margin-bottom: 3%;
+      }
+      .form-group{
+        width:50%;
+      }
+      #body{
+        margin-left:3%;
+        margin-right:3%;
+      }
+      .form-control{
+        margin: 8px;
+      }
+      #right_header{
+        width:20%;
+        font-size:15px;
+        margin-right:0px;
+      }
+      #left_header{
+        margin-left:0;
+        width:40%;
+        display:inline-block;
+      } 
+      #id {
+        width:49%;
+        display: inline-block;
+      }
+      table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+      }
+      td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+      }
+      tr:nth-child(even) {
+          background-color: #dddddd;
+      }
+    </style>
+  </head>
+  <body ng-app="application" ng-controller="appController">
+    <header>
+      <div id="left_header">Hyperledger Fabric Blood Donation Application</div>
+    </header>
+
+    <div id="body">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Create a New QR-Code Test</div>
+            <div class="panel-body">
+                <p>test data :</p>
+                <text style="word-break:break-all" id="data1"></text>
+                <p>test image url :</p>
+                <text style="word-break:break-all" id="url1"></text>
+                <div>
+                    <img id="qrcode1"/> 
+                </div>
+            </div>
+        </div>
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Use QR-Code Test</div>
+            <div class="panel-body">
+                <p>test data :</p>
+                <text style="word-break:break-all" id="data2"></text>
+                <p>test image url :</p>
+                <text style="word-break:break-all" id="url2"></text>
+                <div>
+                    <img id="qrcode2"/> 
+                </div>
+            </div>
+        </div>
+    
+        
+      <div class="form-group">
+        <label>Query All Cards</label>
+        <p><input id="queryAllCargos" type="submit" value="Query" class="btn btn-primary" ng-click="queryCardAll()"></p>
+      </div>
+ 
+      <table id="all_card" class="table" align="center">
+
+        <tr>
+          <th>Key</th>
+          <th>BloodType</th>
+          <th>Date</th>
+          <th>Org</th>
+          <th>Owner</th>
+          <th>Used</th>
+          <th>docType</th>
+        </tr>
+     
+        <tr ng-repeat="card in all_cargo">
+            <td>{{card.Key}}</td>
+          <td>{{card.BloodType}}</td>
+          <td>{{card.Date}}</td>
+          <td>{{card.Org}}</td>
+          <td>{{card.Owner}}</td>
+          <td>{{card.Used}}</td>
+          <td>{{card.docType}}</td>
+        </tr>
+      </table>
+      
+
+      <div class="form-group">
+        <label>Query a Specific BloodCards Contract</label><br>
+        <h5 style="color:red;margin-bottom:2%" id="error_query">Error: Please enter a valid Cargo Id</h5>
+        
+        Enter a catch number: <input id="createName" class="form-control" type="text" placeholder="Ex: Owner" ng-model="card_id">
+        <input id="ownerQuerySubmit" type="submit" value="Query" class="btn btn-primary" ng-click="queryCardOwner()">
+        <input id="dateQuerySubmit" type="submit" value="Query" class="btn btn-primary" ng-click="queryCardDate()">
+        <input id="typeQuerySubmit" type="submit" value="Query" class="btn btn-primary" ng-click="queryCardType()">
+
+      </div>
+
+      <table id="query_card" class="table" align="center">
+
+              <tr>
+                <th>Key</th>
+                <th>BloodType</th>
+                <th>Date</th>
+                <th>Org</th>
+                <th>Owner</th>
+                <th>Used</th>
+                <th>docType</th>
+              </tr>
+           
+              <tr ng-repeat="card in all_query_cargo">
+                  <td>{{card.Key}}</td>
+                  <td>{{card.BloodType}}</td>
+                  <td>{{card.Date}}</td>
+                  <td>{{card.Org}}</td>
+                  <td>{{card.Owner}}</td>
+                  <td>{{card.Used}}</td>
+                  <td>{{card.docType}}</td>
+              </tr>
+      </table>
+
+      <div class="form-group">
+    
+        <label>Create New Card Contract</label>
+        <h5 style="color:green;margin-bottom:2%" id="success_create">Success! Tx ID: {{create_card}}</h5>
+        <br>
+        Enter Owner: <input class="form-control" type="text" placeholder="Ex: 4.0" ng-model="card.Owner" value="3">
+        Enter BloodType: <input class="form-control" type="text" placeholder="Ex: 4.0" ng-model="card.BloodType" value="3">
+        Enter Org: <input class="form-control" type="text" placeholder="Ex: 0239L" ng-model="card.Org" value="3">
+       <input id="createSubmit" type="submit" value="Create" class="btn btn-primary" ng-click="recordCard()"> 
+    
+      </div>
+
+      <div class="form-group">
+
+        <label>Use Card</label><br>
+        <h5 style="color:green;margin-bottom:2%" id="success_holder">Success! Tx ID: {{use_status}}</h5>
+        <h5 style="color:red;margin-bottom:2%" id="error_holder">Error: Please enter a valid Card Id</h5>
+        Enter a Card Key : <input class="form-control" name="assetSelect" placeholder="Ex: Card Key" ng-model="card.Key">
+        <!-- Enter new Status: <input class="form-control" name="assetSelect" placeholder="Ex: Barry" ng-model="cargo.Status"> -->
+        <input id="transferSubmit" type="submit" value="Change" class="btn btn-primary" ng-click="useCard()">
+      
+      </div>
+
+      <div class="form-group">
+
+          <label>Donate Card</label><br>
+          <h5 style="color:green;margin-bottom:2%" id="success_holder">Success! Tx ID: {{donate_status}}</h5>
+          <h5 style="color:red;margin-bottom:2%" id="error_holder">Error: Please enter a valid Card Id</h5>
+          Enter a Card Key : <input class="form-control" name="assetSelect" placeholder="Ex: Card Key" ng-model="dcard.Key">
+          Enter a Other owner : <input class="form-control" name="assetSelect" placeholder="Ex: Other Owner" ng-model="dcard.Owner">
+          <!-- Enter new Status: <input class="form-control" name="assetSelect" placeholder="Ex: Barry" ng-model="cargo.Status"> -->
+          <input id="transferSubmit" type="submit" value="Change" class="btn btn-primary" ng-click="donateCard()">
+        
+       </div>
+
+    </div>
+  </body>
+    <!-- requiring the angular page -->
+    <script type="text/javascript" src="javascripts/core.js"> </script>
+    <script>
+     
+      $(function(){
+
+        $.get("/qrcode/test", function(data, status){
+          document.getElementById("data1").innerHTML=data.data;
+          document.getElementById("url1").innerHTML=data.qrcode;
+          document.getElementById("qrcode1").src = data.qrcode;
+        })
+      });
+    </script>
+
+</html>
